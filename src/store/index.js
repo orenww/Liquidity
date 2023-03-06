@@ -4,7 +4,6 @@ import axios from "axios";
 export default createStore({
   state: {
     searchValue: "",
-    items: {},
     categories: {
       people: {
         key: "people",
@@ -62,22 +61,22 @@ export default createStore({
     }    
   },
   mutations: {
-    setSearchValue(state, value) {
-      state.searchValue = value;
+    setSearchValue(state, payload) {
+      state.searchValue = payload;
     },
 
-    setSearchItems(state, value) {
-      state.categories[value.key].searchItems = value.items;
+    setSearchItems(state, payload) {
+      state.categories[payload.key].searchItems = payload.items;
     },
 
-    setItems(state, value) {
-      state.categories[value.category].items = value.items;
-    }
+    setItems(state, payload) {
+      state.categories[payload.category].items = payload.items;
+    },
   },
   actions: {
-    setSearchValue(context, value) {
-      context.commit("setSearchValue", value);
-      if (value && value != "") {
+    setSearchValue(context, payload) {
+      context.commit("setSearchValue", payload);
+      if (payload && payload != "") {
         this.dispatch("searchAllCategories");
       } else {
         this.dispatch("clearAllItems");
@@ -108,82 +107,83 @@ export default createStore({
       }
     },
 
-    async getCategoryItems(context, category) {
+    async getCategoryItems(context, payload) {
       try {
-        const response = await axios.get(
-          context.state.categories[category].url
-        );
-        context.commit("setItems", { category, items: response.data.results });
+        const response = await axios.get(context.state.categories[payload].url);
+        context.commit("setItems", {
+          category: payload,
+          items: response.data.results,
+        });
       } catch (error) {
         throw new Error("Failed to fetch!");
       }
-    },    
+    },
 
-    sort(context, params) {
-      let items = this.getters.items(params.category);
+    sort(context, payload) {
+      let items = this.getters.items(payload.category);
 
       if (items.length > 0) {
-        if (params.type === "number") {
-          if (params.sort === "asc") {
+        if (payload.type === "number") {
+          if (payload.sort === "asc") {
             items.sort(function (a, b) {
-              if (+a[params.order] > +b[params.order]) return 1;
-              if (+a[params.order] < +b[params.order]) return -1;
+              if (+a[payload.order] > +b[payload.order]) return 1;
+              if (+a[payload.order] < +b[payload.order]) return -1;
               return 0;
             });
           } else {
             items.sort(function (a, b) {
-              if (+b[params.order] > +a[params.order]) return 1;
-              if (+b[params.order] < +a[params.order]) return -1;
+              if (+b[payload.order] > +a[payload.order]) return 1;
+              if (+b[payload.order] < +a[payload.order]) return -1;
               return 0;
             });
           }
-        } else if (params.sort === "asc") {
+        } else if (payload.sort === "asc") {
           items.sort(function (a, b) {
-            if (a[params.order] > b[params.order]) return 1;
-            if (a[params.order] < b[params.order]) return -1;
+            if (a[payload.order] > b[payload.order]) return 1;
+            if (a[payload.order] < b[payload.order]) return -1;
             return 0;
           });
         } else {
           items.sort(function (a, b) {
-            if (b[params.order] > a[params.order]) return 1;
-            if (b[params.order] < a[params.order]) return -1;
+            if (b[payload.order] > a[payload.order]) return 1;
+            if (b[payload.order] < a[payload.order]) return -1;
             return 0;
           });
         }
         context.commit("setItems", {
-          category: params.category,
+          category: payload.category,
           items,
         });
       }
     },
 
-    delete(context, params) {
-      let items = context.state.categories[params.category].items;
+    delete(context, payload) {
+      let items = context.state.categories[payload.category].items;
       var filtered = items.filter((item) => {
-        return item.name != params.row.name;
+        return item.name != payload.row.name;
       });
 
       context.commit("setItems", {
-        category: params.category,
+        category: payload.category,
         items: filtered,
       });
     },
 
-    update(context, params) {
-      let items = context.state.categories[params.category].items;
-      items[items.findIndex((item) => item.name === params.row.name)] =
-        params.row;
+    update(context, payload) {
+      let items = context.state.categories[payload.category].items;
+      items[items.findIndex((item) => item.name === payload.row.name)] =
+        payload.row;
       context.commit("setItems", {
-        category: params.category,
+        category: payload.category,
         items: items,
       });
     },
 
-    add(context, params) {
-      let items = context.state.categories[params.category].items;
-      items.push(params.row);
+    add(context, payload) {
+      let items = context.state.categories[payload.category].items;
+      items.push(payload.row);
       context.commit("setItems", {
-        category: params.category,
+        category: payload.category,
         items: items,
       });
     },

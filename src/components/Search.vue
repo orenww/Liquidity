@@ -7,8 +7,9 @@
       <input
         class="input-field"
         type="text"
-        placeholder="Search product..."
+        placeholder="Search ..."
         @input="debounceSearch"
+        :value="searchValue"
       />
     </div>
 
