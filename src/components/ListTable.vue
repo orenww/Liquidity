@@ -27,8 +27,8 @@
     />
 
     <button v-if="!table.isLoading" class="btn btn-add" @click="addItem()">
-    Add
-  </button>
+      Add
+    </button>
   </div>
 
 </template>
@@ -42,7 +42,7 @@ import TableLite from "vue3-table-lite";
 import EditForm from "../components/EditForm.vue";
 
 export default {
-  props: ["category","aaaa"],
+  props: ["category"],
   name: "ListTable-1",
   data() {
     return {
@@ -113,7 +113,7 @@ export default {
     };
   },
   // computed: mapState(["selectedCategory", "categories", "items"]),
-  computed: {    
+  computed: {
     items() {
       return this.$store.getters.items(this.category);
     },
@@ -156,7 +156,7 @@ export default {
         type,
         category: this.category,
       });
-      
+
       this.table.rows = this.items;
       this.table.sortable.order = order;
       this.table.sortable.sort = sort;
@@ -169,12 +169,12 @@ export default {
       this.table.isLoading = false;
       Array.prototype.forEach.call(elements, (element) => {
         if (element.classList.contains("btn-edit")) {
-          element.addEventListener("click", function () {            
+          element.addEventListener("click", function () {
             updateBtnTypeClicked("edit");
           });
         }
         if (element.classList.contains("btn-delete")) {
-          element.addEventListener("click", function () {            
+          element.addEventListener("click", function () {
             updateBtnTypeClicked("delete");
           });
         }
@@ -217,9 +217,13 @@ export default {
   // eslint-disable-next-line vue/no-unused-components
   components: { TableLite, EditForm },
   created() {
-    this.loadData().then(() => {
+    if (this.items.length === 0) {
+      this.loadData().then(() => {
+        this.doSearch(0, 10, "name", "asc");
+      });
+    } else {
       this.doSearch(0, 10, "name", "asc");
-    });
+    }
   },
 };
 </script>
@@ -231,7 +235,7 @@ export default {
   background: #9d98b5;
   color: #fff;
   text-decoration: none;
-  text-align: center;  
+  text-align: center;
   display: inline;
 }
 

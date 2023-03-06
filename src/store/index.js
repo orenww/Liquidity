@@ -94,6 +94,14 @@ export default createStore({
               context.state.searchValue
           )
           .then((response) => {
+            if (response.data.results) {
+              context.commit("setItems", {
+                category: key,
+                items: response.data.results,
+              });
+              // context.commit("setItems", { key, items: response.data.results });
+            }
+
             var filtered = response.data.results.slice(0, 3);
             context.commit("setSearchItems", { key, items: filtered });
             context.state.isLoading = false;
@@ -112,8 +120,10 @@ export default createStore({
     },
 
     async getCategoryItems(context, payload) {
-      try {        
-        const response = await axios.get(context.state.categories[payload].url);
+      try {
+        const response = await axios.get(
+          context.state.categories[payload].url
+        );
         context.commit("setItems", {
           category: payload,
           items: response.data.results,

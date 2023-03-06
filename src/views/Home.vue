@@ -2,29 +2,11 @@
   <div class="home input-icons">
     <Search></Search>
     <Content></Content>
-    <!-- <div class="custom-wrapper">
-      <i class="fa fa-eye input-icon">
-        <font-awesome-icon icon="fa-solid fa-search" />
-      </i>
-      <input
-        class="input-field"
-        type="text"
-        v-model="this.searchValue"
-        placeholder="Search product..."
-      />
-    </div>
-
-    <div class="" v-for="product in filteredList()" :key="product.id">
-      <p>{{ product.title }}</p>
-    </div>
-    <div class="item error" v-if="!filteredList().length">
-      <p>No results found!</p>
-    </div> -->
+    
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
 import Search from '../components/Search.vue';
 import Content from '../components/Content.vue';
 
@@ -38,27 +20,9 @@ export default {
     return {
       searchValue: "",
     };
-  },
-  computed: mapState(["products", "productsInBag"]),
+  },  
 
   methods: {
-    addToBag(product) {
-      product.quantity = 1;
-      this.$store.dispatch("addToBag", product);
-    },
-
-    isInBag(product) {
-      return this.productsInBag.find((item) => item.id === product.id);
-    },
-    filteredList() {
-      console.log(this.products.length);
-
-      return this.products.filter((product) => {
-        return product.title
-          .toLowerCase()
-          .includes(this.searchValue.toLowerCase());
-      });
-    },
   },
 };
 </script>
