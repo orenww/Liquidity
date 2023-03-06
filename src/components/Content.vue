@@ -1,5 +1,5 @@
 <template>  
-  <div class="content" :class="{'data':searchValue != ''}">
+  <div v-if="!isLoading" class="content" :class="{'data':searchValue != ''}">
     <div v-if="searchValue">
       <div class="category" v-for="category in categories" :key="category.key">
         <div class="category-title">
@@ -12,6 +12,7 @@
       </div>
     </div>
   </div>
+  <h4 v-if="isLoading">Loading...</h4>
 </template>
 
 <script>
@@ -25,7 +26,8 @@ export default {
   computed: mapState([
     "categories",
     "items",
-    "searchValue"
+    "searchValue",
+    "isLoading"
   ]),
 
   methods: {

@@ -4,6 +4,7 @@ import axios from "axios";
 export default createStore({
   state: {
     searchValue: "",
+    isLoading:false,
     categories: {
       people: {
         key: "people",
@@ -84,6 +85,7 @@ export default createStore({
     },
 
     searchAllCategories(context) {
+      context.state.isLoading = true;
       for (const key in context.state.categories) {
         axios
           .get(
@@ -94,9 +96,11 @@ export default createStore({
           .then((response) => {
             var filtered = response.data.results.slice(0, 3);
             context.commit("setSearchItems", { key, items: filtered });
+            context.state.isLoading = false;
           })
           .catch((error) => {
             console.log(error);
+            context.state.isLoading = false;
           });
       }
     },
@@ -108,7 +112,7 @@ export default createStore({
     },
 
     async getCategoryItems(context, payload) {
-      try {
+      try {        
         const response = await axios.get(context.state.categories[payload].url);
         context.commit("setItems", {
           category: payload,
