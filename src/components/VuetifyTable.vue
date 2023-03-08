@@ -1,15 +1,15 @@
 <template>
-  <base-dialog
-    :show="showDialog"
-    :title="dialgTitle"
-    @close="closeDialog()"
-  >
+  <base-dialog :show="showDialog" :title="dialgTitle" @close="closeDialog()">
     <template #default>
       <edit-form :data="selectedRow" @save-data="saveData" />
     </template>
   </base-dialog>
 
   <div class="list">
+    <div class="text-center" v-if="isLoading">
+      <v-progress-circular indeterminate color="black"></v-progress-circular>
+    </div>
+
     <v-data-table
       v-model:items-per-page="itemsPerPage"
       :headers="headers"
@@ -71,7 +71,7 @@ export default {
       return this.$store.getters[this.category + "/items"];
     },
     isLoading() {
-      return this.$store.getters.isLoading;
+      return this.$store.getters[this.category + "/isLoading"];
     },
     count() {
       return this.$store.getters[[this.category + "/count"]];

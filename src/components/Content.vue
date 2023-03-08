@@ -1,5 +1,9 @@
 <template>
-  <div v-if="!isLoading " class="content" :class="{ data: searchValue != '' && !isDataEmpty }">
+  <div
+    v-if="!isLoading"
+    class="content"
+    :class="{ data: searchValue != '' && !isDataEmpty }"
+  >
     <div v-if="searchValue">
       <div class="category" v-for="category in categories" :key="category.key">
         <div v-if="category.searchItems.length > 0">
@@ -19,7 +23,9 @@
       </div>
     </div>
   </div>
-  <h4 v-if="isLoading">Loading...</h4>
+  <div class="text-center" v-if="isLoading">
+    <v-progress-circular indeterminate color="black"></v-progress-circular>
+  </div>  
   <h4 v-if="searchValue != '' && isDataEmpty && !isLoading">No data found</h4>
 </template>
 
@@ -30,17 +36,17 @@ export default {
   name: "Content-1",
   data() {
     return {};
-  },  
+  },
   computed: {
     ...mapState(["categories", "items", "searchValue", "isLoading"]),
-    isDataEmpty(){
+    isDataEmpty() {
       for (const key in this.categories) {
-        if(this.categories[key].searchItems.length > 0){
+        if (this.categories[key].searchItems.length > 0) {
           return false;
         }
       }
       return true;
-    }
+    },
   },
 
   methods: {
@@ -57,7 +63,7 @@ export default {
       return content.replace(new RegExp(this.searchValue, "gi"), (match) => {
         return '<span class="highlightText">' + match + "</span>";
       });
-    },    
+    },
   },
 };
 </script>

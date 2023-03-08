@@ -6,6 +6,7 @@ export default {
     url: "https://swapi.dev/api/people/",
     items: [],
     count: 0,
+    isLoading:false
   },
   getters: {
     items(state) {
@@ -36,8 +37,10 @@ export default {
   actions: {
     async getItems(context, payload) {
       try {
+        context.state.isLoading = true;
         let url = context.state.url + "?page=" + payload.page;
         const response = await axios.get(url);
+        context.state.isLoading = false;
         context.commit("setItems", {
           items: response.data.results,
         });
@@ -46,6 +49,7 @@ export default {
           count: response.data.count,
         });
       } catch (error) {
+        context.state.isLoading = false;
         throw new Error("Failed to fetch!");
       }
     },
