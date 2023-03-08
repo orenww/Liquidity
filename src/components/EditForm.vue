@@ -1,60 +1,89 @@
 <template>  
   <form @submit.prevent="submitForm">
-    <div class="form-control" :class="{ invalid: !name.isValid }">
+    <div
+      class="form-control"
+      :class="{ invalid: !name.isValid }"
+    >
       <label for="name">Name</label>
       <input
-        :disabled="!this.data.isNew"
-        type="text"
         id="name"
         v-model.trim="name.val"
+        :disabled="!data.isNew"
+        type="text"
         @blur="clearValidity('name')"
-      />
-      <p v-if="!name.isValid">Name must not be empty.</p>
+      >
+      <p v-if="!name.isValid">
+        Name must not be empty.
+      </p>
     </div>
-    <div class="form-control" :class="{ invalid: !gender.isValid }">
+    <div
+      class="form-control"
+      :class="{ invalid: !gender.isValid }"
+    >
       <label for="gender">Gender</label>
       <input
-        type="text"
         id="gender"
         v-model.trim="gender.val"
+        type="text"
         @blur="clearValidity('gender')"
-      />
-      <p v-if="!gender.isValid">Gender must not be empty.</p>
+      >
+      <p v-if="!gender.isValid">
+        Gender must not be empty.
+      </p>
     </div>
-    <div class="form-control" :class="{ invalid: !birth_year.isValid }">
+    <div
+      class="form-control"
+      :class="{ invalid: !birth_year.isValid }"
+    >
       <label for="birth_year">BIRTH YEAR</label>
       <input
-        type="text"
         id="birth_year"
-        rows="5"
         v-model.trim="birth_year.val"
+        type="text"
+        rows="5"
         @blur="clearValidity('birth_year')"
-      />
-      <p v-if="!birth_year.isValid">Birth year must not be empty.</p>
+      >
+      <p v-if="!birth_year.isValid">
+        Birth year must not be empty.
+      </p>
     </div>
-    <div class="form-control" :class="{ invalid: !height.isValid }">
+    <div
+      class="form-control"
+      :class="{ invalid: !height.isValid }"
+    >
       <label for="height">Height</label>
       <input
-        type="number"
         id="height"
         v-model.number="height.val"
+        type="number"
         @blur="clearValidity('height')"
-      />
-      <p v-if="!height.isValid">Height must be greater than 0.</p>
+      >
+      <p v-if="!height.isValid">
+        Height must be greater than 0.
+      </p>
     </div>
-    <div class="form-control" :class="{ invalid: !mass.isValid }">
+    <div
+      class="form-control"
+      :class="{ invalid: !mass.isValid }"
+    >
       <label for="height">Mass</label>
       <input
-        type="number"
         id="mass"
         v-model.number="mass.val"
+        type="number"
         @blur="clearValidity('mass')"
-      />
-      <p v-if="!height.isValid">Mass must be greater than 0.</p>
+      >
+      <p v-if="!height.isValid">
+        Mass must be greater than 0.
+      </p>
     </div>
 
-    <p v-if="!formIsValid">Please fix the above errors and submit again.</p>
-    <button class="btn-float-right">Save</button>
+    <p v-if="!formIsValid">
+      Please fix the above errors and submit again.
+    </p>
+    <button class="btn-float-right">
+      Save
+    </button>
   </form>
 </template>
 
@@ -65,13 +94,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  created() {
-    this.name.val = this.data?.data.name || "";
-    this.gender.val = this.data.data.gender || "";
-    this.birth_year.val = this.data.data.birth_year || "";
-    this.height.val = this.data.data.height || "";
-    this.mass.val = this.data.data.mass || "";        
   },
   emits: ["save-data"],
   data() {
@@ -102,6 +124,13 @@ export default {
       },
       formIsValid: true,
     };
+  },
+  created() {
+    this.name.val = this.data?.data.name || "";
+    this.gender.val = this.data.data.gender || "";
+    this.birth_year.val = this.data.data.birth_year || "";
+    this.height.val = this.data.data.height || "";
+    this.mass.val = this.data.data.mass || "";        
   },
   methods: {
     clearValidity(input) {

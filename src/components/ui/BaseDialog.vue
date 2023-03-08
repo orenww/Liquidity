@@ -1,20 +1,27 @@
 <template>
-    <teleport to="body">
-      <div v-if="show" @click="tryClose" class="backdrop"></div>
-      <transition name="dialog">
-        <dialog open v-if="show">
-          <header>
-            <slot name="header">
-              <h2>{{ title }}</h2>
-            </slot>
-          </header>
-          <section>
-            <slot></slot>
-          </section>
-        </dialog>
-      </transition>
-    </teleport>
-  </template>
+  <teleport to="body">
+    <div
+      v-if="show"
+      class="backdrop"
+      @click="tryClose"
+    />
+    <transition name="dialog">
+      <dialog
+        v-if="show"
+        open
+      >
+        <header>
+          <slot name="header">
+            <h2>{{ title }}</h2>
+          </slot>
+        </header>
+        <section>
+          <slot />
+        </section>
+      </dialog>
+    </transition>
+  </teleport>
+</template>
   
   <script>
   export default {
@@ -23,6 +30,7 @@
         type: Boolean,
         required: true,
       },
+      // eslint-disable-next-line vue/require-default-prop
       title: {
         type: String,
         required: false,

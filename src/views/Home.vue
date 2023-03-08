@@ -1,8 +1,7 @@
 <template>
   <div class="home input-icons">
-    <Search></Search>
-    <Content></Content>
-    
+    <Search />
+    <Content />
   </div>
 </template>
 
@@ -10,12 +9,13 @@
 import Search from '../components/Search.vue';
 import Content from '../components/Content.vue';
 
-export default {
+export default {  
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "Home1",
   components: {
     Search,
     Content
-  },  
-  name: "Home-1",
+  },
   data() {
     return {
       searchValue: "",

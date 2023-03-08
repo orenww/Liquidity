@@ -1,14 +1,11 @@
 <template>
   <base-dialog
-    :show="editMode.showDialog"
-    title="Edit"
-    @close="editMode.showDialog = false"
+    :show="showDialog"
+    :title="dialgTitle"
+    @close="closeDialog()"
   >
     <template #default>
-      <edit-form
-        :data="selectedRow"
-        @save-data="saveData"
-      />
+      <edit-form :data="selectedRow" @save-data="saveData" />
     </template>
   </base-dialog>
 
@@ -22,16 +19,8 @@
     >
       <template #[`item.actions`]="{ item }">
         <div class="btn-container">
-          <button
-            class="btn btn-edit"
-            @click="editItem(item.raw)"
-          >
-            Edit
-          </button>
-          <button
-            class="btn btn-edit"
-            @click="deleteItem(item.raw)"
-          >
+          <button class="btn btn-edit" @click="editItem(item.raw)">Edit</button>
+          <button class="btn btn-edit" @click="deleteItem(item.raw)">
             Delete
           </button>
         </div>
@@ -48,26 +37,20 @@
       </template>
     </v-data-table>
 
-    <button
-      class="btn btn-add"
-      @click="addItem()"
-    >
-      Add
-    </button>
+    <button class="btn btn-add" @click="addItem()">Add</button>
   </div>
 </template>
 
 <script>
-import { reactive } from "vue";
 import EditForm from "../components/EditForm.vue";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 
 export default {
   name: "VeutifyTable",
   components: { EditForm },
-  
+
   // eslint-disable-next-line vue/require-prop-types
-  props: ["category"],
+  props: ["category", "headers"],
   data() {
     return {
       options: {
@@ -76,100 +59,77 @@ export default {
       page: 1,
       itemsPerPage: 10,
       numOfPages: 1,
-      headers: [
-        { title: "NAME", key: "name", width: "20%", align: "start" },
-        { title: "GENDER", key: "gender", width: "10%" },
-        {
-          title: "BIRTH YEAR",
-          key: "birth_year",
-          width: "10%",
-          sortable: false,
-        },
-        { title: "HEIGHT", key: "height", width: "10%" },
-        { title: "MASS", key: "mass", width: "10%", sort: this.customSort },
-        { title: "ACTIONS", key: "actions", sortable: false, width: "30%" },
-      ],
       desserts: [],
-
-      editMode: reactive({ showDialog: false }),
-      selectedRow: reactive({ data: {} }),
+      dialgTitle: "",
+      showDialog: false,
+      selectedRow: { data: {} },
     };
   },
 
   computed: {
     items() {
-      return this.$store.getters.items(this.category);
+      return this.$store.getters[this.category + "/items"];
     },
     isLoading() {
       return this.$store.getters.isLoading;
     },
     count() {
-      return this.$store.getters.count(this.category);
+      return this.$store.getters[[this.category + "/count"]];
     },
-
   },
   created() {
     if (this.items.length === 0) {
       this.loadData().then(() => {
-        this.desserts = this.items;        
-        this.numOfPages = Math.ceil(this.count / this.itemsPerPage);      
+        this.desserts = this.items;
+        this.numOfPages = Math.ceil(this.count / this.itemsPerPage);
       });
     } else {
-      this.desserts = this.items;      
+      this.desserts = this.items;
       this.numOfPages = Math.ceil(this.count / this.itemsPerPage);
     }
   },
   methods: {
-    customSort(a, b) {
-      if (isNaN(a) || isNaN(b)) {
-        return a.toString() > b.toString() ? -1 : 1;
-      }
-      return a - b;
-    },
     saveData(data) {
-      console.log(data);
       if (data.isNew) {
         delete data.isNew;
-        this.$store.dispatch("add", {
-          category: this.category,
+        this.$store.dispatch(this.category + "/add", {
           row: data,
         });
       } else {
-        this.$store.dispatch("update", {
-          category: this.category,
+        this.$store.dispatch(this.category + "/update", {
           row: data,
         });
       }
+      this.closeDialog();
+    },
 
-      this.editMode.showDialog = false;
+    closeDialog() {
+      this.showDialog = false;
       this.selectedRow.isNew = false;
       this.selectedRow.data = {};
-      this.btnTypeClicked = "";
     },
 
     addItem() {
-      this.editMode.showDialog = true;
+      this.showDialog = true;
       this.selectedRow.isNew = true;
+      this.dialgTitle = "Add";
     },
 
     editItem(row) {
       console.log("row - ", row);
-      this.editMode.showDialog = true;
+      this.showDialog = true;
       this.selectedRow.isNew = false;
       this.selectedRow.data = row;
+      this.dialgTitle = "Edit";
     },
 
     async deleteItem(row) {
       console.log("row - ", row);
-      await this.$store.dispatch("delete", {
+      await this.$store.dispatch(this.category + "/delete", {
         category: this.category,
         row: row,
       });
       this.desserts = this.items;
-    },
-
-    confirmEdit() {      
-      this.editMode.showDialog = false;
     },
 
     async loadPage(event) {
@@ -177,7 +137,7 @@ export default {
         return;
       }
       await this.$store
-        .dispatch("getCategoryItems", {
+        .dispatch(this.category + "/getItems", {
           category: this.category,
           page: this.page,
         })
@@ -188,7 +148,7 @@ export default {
 
     async loadData() {
       try {
-        await this.$store.dispatch("getCategoryItems", {
+        await this.$store.dispatch(this.category + "/getItems", {
           category: this.category,
           page: 1,
         });

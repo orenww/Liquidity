@@ -2,11 +2,11 @@
   <div class="category">
     <div class="title">
       {{ category }}
-    </div>
-    <!-- <list-table :category="category" v-if="category === 'people'"></list-table> -->
+    </div>   
     <vuetify-table
       v-if="category === 'people'"
       :category="category"
+      :headers="headers"
     />
   </div>
 </template>
@@ -20,12 +20,31 @@ export default {
   props: ["category"],
   data() {
     return {
-      
+      headers: [
+        { title: "NAME", key: "name", width: "20%", align: "start" },
+        { title: "GENDER", key: "gender", width: "10%" },
+        {
+          title: "BIRTH YEAR",
+          key: "birth_year",
+          width: "10%",
+          sortable: false,
+        },
+        { title: "HEIGHT", key: "height", width: "10%" },
+        { title: "MASS", key: "mass", width: "10%", sort: this.customSort },
+        { title: "ACTIONS", key: "actions", sortable: false, width: "30%" },
+      ],
     }
   },
   computed: {},
   created() {},
-  methods: {},
+  methods: {
+    customSort(a, b) {
+      if (isNaN(a) || isNaN(b)) {
+        return a.toString() > b.toString() ? -1 : 1;
+      }
+      return a - b;
+    },
+  },
 };
 </script>
 

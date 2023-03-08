@@ -1,21 +1,20 @@
 import { createStore } from "vuex";
 import axios from "axios";
-
-// import Search from
-const searchModule = {
-  state() {
-    return {
-      searchValue: "",
-    }
-  },
-  mutations: {},
-  actions: {},
-  getters: {}
-}
+import PeopleModule from "./modules/people.js";
+import PlanetsModule from "./modules/planets.js";
+import FilmModule from "./modules/films.js";
+import SpeciesModule from "./modules/species.js";
+import VechiclesModule from "./modules/vehicles.js";
+import StarshipsModule from "./modules/starships.js";
 
 export default createStore({
   modules: {
-    search: searchModule
+    people: PeopleModule,
+    planets: PlanetsModule,
+    films: FilmModule,
+    species: SpeciesModule,
+    vehicles: VechiclesModule,
+    starships: StarshipsModule,
   },
   state: {
     searchValue: "",
@@ -23,68 +22,46 @@ export default createStore({
     categories: {
       people: {
         key: "people",
-        url: "https://swapi.dev/api/people/",
-        items: [],
+        url: "https://swapi.dev/api/people/",        
         searchItems: [],
-        displayProp: "name",
-        count: 0,
+        displayProp: "name"        
       },
       planets: {
         key: "planets",
         url: "https://swapi.dev/api/planets/",
-        items: [],
         searchItems: [],
-        displayProp: "name",
-        count: 0,
+        displayProp: "name"        
       },
       films: {
         key: "films",
         url: "https://swapi.dev/api/films/",
-        items: [],
         searchItems: [],
         displayProp: "title",
-        count: 0,
       },
       species: {
         key: "species",
         url: "https://swapi.dev/api/species/",
-        items: [],
         searchItems: [],
-        displayProp: "name",
-        count: 0,
+        displayProp: "name",        
       },
       vehicles: {
         key: "vehicles",
         url: "https://swapi.dev/api/vehicles/",
-        items: [],
         searchItems: [],
-        displayProp: "name",
-        count: 0,
+        displayProp: "name",        
       },
       starships: {
         key: "starships",
         url: "https://swapi.dev/api/starships/",
-        items: [],
         searchItems: [],
         displayProp: "name",
-        count: 0,
       },
     },
   },
   getters: {
-    items: (state) => (category) => {
-      return state.categories[category].items;
-    },
-
-    count: (state) => (category) => {
-      console.log(state.categories[category].count);
-      return state.categories[category].count;
-    },
-
-    isLoading(state){
+    isLoading(state) {
       return state.categories.isLoading;
-    }
-
+    },
   },
   mutations: {
     setSearchValue(state, payload) {
@@ -94,14 +71,6 @@ export default createStore({
     setSearchItems(state, payload) {
       state.categories[payload.key].searchItems = payload.items;
     },
-
-    setItems(state, payload) {
-      state.categories[payload.category].items = payload.items;
-    },
-
-    setCount(state, payload) {
-      state.categories[payload.category].count = payload.count;
-    }
   },
   actions: {
     setSearchValue(context, payload) {
@@ -123,14 +92,6 @@ export default createStore({
               context.state.searchValue
           )
           .then((response) => {
-            // if (response.data.results) {
-            //   context.commit("setItems", {
-            //     category: key,
-            //     items: response.data.results,
-            //   });
-            //   // context.commit("setItems", { key, items: response.data.results });
-            // }
-
             var filtered = response.data.results.slice(0, 3);
             context.commit("setSearchItems", { key, items: filtered });
             context.state.isLoading = false;
@@ -147,120 +108,5 @@ export default createStore({
         context.commit("setSearchItems", { key, items: [] });
       }
     },
-
-    async getCategoryItems(context, payload) {
-      try {
-        let url = context.state.categories[payload.category].url + "?page=" + payload.page;
-        console.log(url);
-        const response = await axios.get(url);
-        context.commit("setItems", {
-          category: payload.category,
-          items: response.data.results,
-        });
-
-        context.commit("setCount", {
-          category: payload.category,
-          count: response.data.count,
-        });
-
-        
-      } catch (error) {
-        throw new Error("Failed to fetch!");
-      }
-    },
-
-    sort(context, payload) {
-      let items = this.getters.items(payload.category);
-
-      if (items.length > 0) {
-        if (payload.type === "number") {
-          if (payload.sort === "asc") {
-            items.sort(function (a, b) {
-              if (+a[payload.order] > +b[payload.order]) return 1;
-              if (+a[payload.order] < +b[payload.order]) return -1;
-              return 0;
-            });
-          } else {
-            items.sort(function (a, b) {
-              if (+b[payload.order] > +a[payload.order]) return 1;
-              if (+b[payload.order] < +a[payload.order]) return -1;
-              return 0;
-            });
-          }
-        } else if (payload.sort === "asc") {
-          items.sort(function (a, b) {
-            if (a[payload.order] > b[payload.order]) return 1;
-            if (a[payload.order] < b[payload.order]) return -1;
-            return 0;
-          });
-        } else {
-          items.sort(function (a, b) {
-            if (b[payload.order] > a[payload.order]) return 1;
-            if (b[payload.order] < a[payload.order]) return -1;
-            return 0;
-          });
-        }
-        context.commit("setItems", {
-          category: payload.category,
-          items,
-        });
-      }
-    },
-
-    delete(context, payload) {
-      let items = context.state.categories[payload.category].items;
-      var filtered = items.filter((item) => {
-        return item.name != payload.row.name;
-      });
-
-      context.commit("setItems", {
-        category: payload.category,
-        items: filtered,
-      });
-    },
-
-    update(context, payload) {
-      let items = context.state.categories[payload.category].items;
-      items[items.findIndex((item) => item.name === payload.row.name)] =
-        payload.row;
-      context.commit("setItems", {
-        category: payload.category,
-        items: items,
-      });
-    },
-
-    add(context, payload) {
-      let items = context.state.categories[payload.category].items;
-      items.push(payload.row);
-      context.commit("setItems", {
-        category: payload.category,
-        items: items,
-      });
-    },
-  },  
+  },
 });
-
-// searchAllCategories(context) {
-//   var promises = [];
-//   var p;
-//   var isError;
-//   for (const key in urls) {
-//     p = axios.get(urls[key]).catch((error) => {
-//       console.log(error);
-//       isError = true;
-//     });
-//     promises.push(p);
-//   }
-
-//   var promise = Promise.all(promises);
-
-//   console.log(isError);
-
-//   promise
-//     .then((data) => {
-//       context.commit("setItems", data);
-//     })
-//     .catch(function (error) {
-//       console.error("error", error);
-//     });
-// },
