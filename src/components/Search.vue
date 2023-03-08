@@ -1,18 +1,15 @@
 <template>
-  <div class="home">
+  <div class="search">
     <div class="custom-wrapper">
-      <i class="fa fa-eye input-icon">
-        <font-awesome-icon icon="fa-solid fa-search" />
-      </i>
+      <v-icon icon="mdi-magnify" class="input-icon"></v-icon>      
       <input
         class="input-field"
         type="text"
         placeholder="Search ..."
-        @input="debounceSearch"
         :value="searchValue"
-      />
+        @input="debounceSearch"
+      >
     </div>
-
   </div>
 </template>
 
@@ -20,7 +17,8 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "Search-1",
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: "Search",
   data() {
     return {};
   },
@@ -39,17 +37,17 @@ export default {
 </script>
 
 <style lang="scss">
-.home {
+.search {
   .input-icon {
     position: absolute;
     color: rgb(0, 128, 255);
 
     /* Vertically center the icon in the input */
-    top: calc(50% - 0.5em);
+    top: calc(45% - 0.5em);
     padding-left: 10px !important;
   }
 
-  input {
+  .input-field {
     padding-left: 25px;
     width: 49%;
     margin: 2px;
@@ -57,6 +55,7 @@ export default {
     font-size: 18px;
     height: 40px;
     background-color: transparent;
+    border-style: solid;
   }
   .custom-wrapper {
     position: relative;

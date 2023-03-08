@@ -1,25 +1,31 @@
-<!-- eslint-disable no-unused-vars -->
 <template>
   <div class="category">
-    <div class="title">{{ category }}</div>
-    <list-table :category="category" v-if="category === 'people'"></list-table>
+    <div class="title">
+      {{ category }}
+    </div>
+    <!-- <list-table :category="category" v-if="category === 'people'"></list-table> -->
+    <vuetify-table
+      v-if="category === 'people'"
+      :category="category"
+    />
   </div>
 </template>
 
 <script>
-import ListTable from './../components/ListTable.vue';
+// import ListTable from './../components/ListTable.vue';
+import VuetifyTable from './../components/VuetifyTable.vue';
 export default {
-  props: ["category"],
   name: "CategoryPage",
+  components: {VuetifyTable},
+  props: ["category"],
   data() {
     return {
       
     }
   },
   computed: {},
-  methods: {},
-  components: {ListTable},
   created() {},
+  methods: {},
 };
 </script>
 

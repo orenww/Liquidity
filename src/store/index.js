@@ -1,7 +1,22 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+// import Search from
+const searchModule = {
+  state() {
+    return {
+      searchValue: "",
+    }
+  },
+  mutations: {},
+  actions: {},
+  getters: {}
+}
+
 export default createStore({
+  modules: {
+    search: searchModule
+  },
   state: {
     searchValue: "",
     isLoading:false,
@@ -59,7 +74,17 @@ export default createStore({
   getters: {
     items: (state) => (category) => {
       return state.categories[category].items;
-    }    
+    },
+
+    count: (state) => (category) => {
+      console.log(state.categories[category].count);
+      return state.categories[category].count;
+    },
+
+    isLoading(state){
+      return state.categories.isLoading;
+    }
+
   },
   mutations: {
     setSearchValue(state, payload) {
@@ -73,6 +98,10 @@ export default createStore({
     setItems(state, payload) {
       state.categories[payload.category].items = payload.items;
     },
+
+    setCount(state, payload) {
+      state.categories[payload.category].count = payload.count;
+    }
   },
   actions: {
     setSearchValue(context, payload) {
@@ -94,13 +123,13 @@ export default createStore({
               context.state.searchValue
           )
           .then((response) => {
-            if (response.data.results) {
-              context.commit("setItems", {
-                category: key,
-                items: response.data.results,
-              });
-              // context.commit("setItems", { key, items: response.data.results });
-            }
+            // if (response.data.results) {
+            //   context.commit("setItems", {
+            //     category: key,
+            //     items: response.data.results,
+            //   });
+            //   // context.commit("setItems", { key, items: response.data.results });
+            // }
 
             var filtered = response.data.results.slice(0, 3);
             context.commit("setSearchItems", { key, items: filtered });
@@ -121,13 +150,20 @@ export default createStore({
 
     async getCategoryItems(context, payload) {
       try {
-        const response = await axios.get(
-          context.state.categories[payload].url
-        );
+        let url = context.state.categories[payload.category].url + "?page=" + payload.page;
+        console.log(url);
+        const response = await axios.get(url);
         context.commit("setItems", {
-          category: payload,
+          category: payload.category,
           items: response.data.results,
         });
+
+        context.commit("setCount", {
+          category: payload.category,
+          count: response.data.count,
+        });
+
+        
       } catch (error) {
         throw new Error("Failed to fetch!");
       }
@@ -201,8 +237,7 @@ export default createStore({
         items: items,
       });
     },
-  },
-  modules: {},
+  },  
 });
 
 // searchAllCategories(context) {
